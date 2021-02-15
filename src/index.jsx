@@ -1,23 +1,24 @@
-// es6 语法
-for (const item of ['hello', 'world!']) {
-	document.body.append(item);
-}
+import isClass from 'is-class';
 
-// 自制render
 function render(el, parentElement) {
 	parentElement.appendChild(el)
 }
 
-// 自制hooks函数
-function createHooks(fn, props, children) {
+function createElementByHooks(Hooks, props, children) {
 	props = props || Object.create(null);
 	props.children = children;
-	return fn(props);
+	return Hooks(props);
 }
 
-// 自制createElement
-function createElement(tagName, attrs, ...children) {
-	const el = typeof tagName === 'function' ? createHooks(tagName, attrs, children) : document.createElement(tagName)
+function createElementByClass(Klass, props, children) {
+	props = props || Object.create(null);
+	props.children = children;
+	const el = new Klass(props).render();
+	return el;
+}
+
+function createElementByTagName(tagName, attrs, children) {
+	const el = document.createElement(tagName);
 	for (const k in attrs) {
 		el.setAttribute(k, attrs[k]);
 	}
@@ -25,12 +26,17 @@ function createElement(tagName, attrs, ...children) {
 	return el;
 }
 
-function App() {
-	return <HelloWorld id="slogen" />
-}
-
-function HelloWorld(props) {
-	return <div id={props.id}>toy react</div>
+// 	长函数（超过十行）-- 代码之丑  https://time.geekbang.org/column/article/327424
+function createElement(type, attrs, ...children) {
+	if (typeof type === 'string') {
+		return  createElementByTagName(type, attrs, children);
+	}
+	if (isClass(type)) {
+		return createElementByClass(type, attrs, children);
+	}
+	if (typeof type === 'function') {
+		return createElementByHooks(type, attrs, children);
+	}
 }
 
 export const ReactDOM = {
@@ -38,7 +44,47 @@ export const ReactDOM = {
 };
 
 export const React = {
-	createElement
+	createElement,
+	Component,
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+
+
+
+function App(props) {
+	return <div>
+		{ props.children }
+		<HelloWorld id="slogen" />
+	</div>
+}
+
+function HelloWorld(props) {
+	return <div class={props.id}>toy react</div>
+}
+
+class Component {
+	constructor(props) {
+		this.props = props;
+		this.state = {};
+	}
+}
+
+class MyComponent extends Component {
+	render() {
+		return <div>
+			{this.props.children}
+			<Child content="abc" />
+		</div>
+	}
+}
+
+class Child extends Component {
+	render() {
+		return <div id="slogen">toy react {this.props.content} </div>
+	}
+}
+
+ReactDOM.render(
+	<MyComponent>hi !</MyComponent>, 
+	document.getElementById('root')
+);
