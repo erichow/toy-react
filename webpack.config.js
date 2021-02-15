@@ -17,8 +17,7 @@ module.exports = {
 						loader: 'babel-loader',
 						options: {
 							presets: ['@babel/preset-env'],
-							// 解析JSX语法时用createElement代替React.createElement
-							plugins: [['@babel/plugin-transform-react-jsx', { pragma: 'createElement'}]]
+							plugins: ['@babel/plugin-transform-react-jsx']
 						}
 					}
 				]
