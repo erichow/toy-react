@@ -1,7 +1,12 @@
 import isClass from 'is-class';
 
 function render(el, parentElement) {
-	parentElement.appendChild(el)
+	let range = document.createRange();
+	range.setStart(parentElement, 0);
+	range.setEnd(parentElement, parentElement.childNodes.length);
+	range.deleteContents();
+	range.insertNode(el)
+	// parentElement.appendChild(el);
 }
 
 function createElementByHooks(Hooks, props, children) {
@@ -26,7 +31,7 @@ function createElementByTagName(tagName, attrs, children) {
 	return el;
 }
 
-// 	长函数（超过十行）-- 代码之丑  https://time.geekbang.org/column/article/327424
+// 长函数（超过十行）-- 代码之丑  https://time.geekbang.org/column/article/327424
 function createElement(type, attrs, ...children) {
 	if (typeof type === 'string') {
 		return  createElementByTagName(type, attrs, children);
@@ -36,6 +41,13 @@ function createElement(type, attrs, ...children) {
 	}
 	if (typeof type === 'function') {
 		return createElementByHooks(type, attrs, children);
+	}
+}
+
+class Component {
+	constructor(props) {
+		this.props = props;
+		this.state = {};
 	}
 }
 
@@ -60,13 +72,6 @@ function App(props) {
 
 function HelloWorld(props) {
 	return <div class={props.id}>toy react</div>
-}
-
-class Component {
-	constructor(props) {
-		this.props = props;
-		this.state = {};
-	}
 }
 
 class MyComponent extends Component {
